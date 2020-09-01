@@ -3,7 +3,7 @@ Inove Escuela de Código\
 info@inove.com.ar\
 Web: [Inove](http://inove.com.ar)
 
-# API Service! [Python]
+# Web Apps! [Python]
 En este repositorio encontrarán los siguientes archivos:
 
 __Ejemplos que el profesor mostrará en clase__\
@@ -11,6 +11,9 @@ __Ejemplos que el profesor mostrará en clase__\
 
 __Ejercicios para que el alumno desarrolle durante la clase__\
 /ejercicios_clase
+
+__Ejercicios para que el alumno desarrolle durante la semana__\
+ejercicio_practica.md
 
 # Consultas
 alumnos@inove.com.ar
