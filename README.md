@@ -9,11 +9,11 @@ En este repositorio encontrarán los siguientes archivos:
 __Ejemplos que el profesor mostrará en clase__\
 /ejemplos_clase
 
-__Ejercicios para que el alumno desarrolle durante la clase__\
+__Ejercicios para que el alumno desarrolle lo visto en clase__\
 /ejercicios_clase
 
-__Ejercicios para que el alumno desarrolle durante la semana__\
-ejercicio_practica.md
+__Ejercicios para que el alumno profundice sobre el tema durante la semana__\
+ejercicio_profundizacion.md
 
 # Consultas
 alumnos@inove.com.ar
