@@ -1,4 +1,4 @@
-# Ejercicios de práctica [Python]
+# Ejercicios de profundización [Python]
 EL propósito de este ejercicio es que el alumno pueda exponer su trabajo en la nube para que cualquier pueda accederlo y disfrutarlo.
 
 # Enunciado
