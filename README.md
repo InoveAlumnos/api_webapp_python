@@ -10,7 +10,7 @@ __Ejemplos que el profesor mostrará en clase__\
 /ejemplos_clase
 
 __Ejercicios para que el alumno desarrolle lo visto en clase__\
-/ejercicios_clase
+/ejercicios_practica
 
 __Ejercicios para que el alumno profundice sobre el tema durante la semana__\
 ejercicio_profundizacion.md

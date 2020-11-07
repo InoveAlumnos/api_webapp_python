@@ -22,8 +22,6 @@ __author__ = "Inove Coding School"
 __email__ = "INFO@INOVE.COM.AR"
 __version__ = "1.0"
 
-# Realizar HTTP POST --> https://www.codepunker.com/tools/http-requests
-
 import traceback
 import io
 import sys
@@ -136,21 +134,15 @@ def registro():
     if request.method == 'GET':
         # Si entré por "GET" es porque acabo de cargar la página
         try:
-            # De esta forma verifico si se ha registro el nombre del usuario
-            # en la sesion, en caso negativo se solicita el login
-            if 'user' in session:
-                return render_template('registro.html')
-            else:
-                return redirect(url_for('login'))
-            
+            return render_template('registro.html')
         except:
             return jsonify({'trace': traceback.format_exc()})
 
     if request.method == 'POST':
         try:
             # Obtener del HTTP POST JSON los pulsos
+            nombre = str(request.form.get('name'))
             pulsos = str(request.form.get('heartrate'))
-            nombre = session.get('user')
 
             if(nombre is None or pulsos is None or pulsos.isdigit() is False):
                 # Datos ingresados incorrectos
@@ -184,7 +176,7 @@ def login():
             return jsonify({'trace': traceback.format_exc()})
 
     if request.method == 'POST':
-        # Obtener del HTTP POST JSON el nombre y los pulsos
+        # Obtener del HTTP POST JSON el nombre
         nombre = str(request.form.get('name'))
 
         if(nombre is None):
@@ -208,6 +200,8 @@ def logout():
 @app.route("/user")
 def user():
     try:
+        # De esta forma verifico si se ha registro el nombre del usuario
+        # en la sesion, en caso negativo se solicita el login
         if 'user' in session:
             nombre = session['user']
             return f'<h1>Hola {nombre}</h1>'

@@ -22,8 +22,6 @@ __author__ = "Inove Coding School"
 __email__ = "INFO@INOVE.COM.AR"
 __version__ = "1.0"
 
-# Realizar HTTP POST --> https://www.codepunker.com/tools/http-requests
-
 import traceback
 import io
 import sys
@@ -112,11 +110,16 @@ def personas_tabla():
 @app.route("/comparativa")
 def comparativa():
     try:
-        # Mostrar todos los registros en um gráfico
+        # Mostrar todos los registros en un gráfico
         result = '''<h3>Implementar una función en persona.py
-                    nationality_review</h3>'''
-        result += '''<h3>Esa funcion debe devolver los datos que necesite
-                    para implementar el grafico a mostrar</h3>'''
+                    que se llame "age_report"</h3>'''
+        result += '''<h3>Esa funcion debe devolver los datos
+                    de todas las edades ingresadas e realizar
+                    un gráfico "plot" para mostrar en el HTMl</h3>'''
+        result += '''<h3>Bonus track: puede hacer que esta endpoint reciba
+                    como parámetro estático o dinámico que indique la nacionalidad
+                    que se desea estudiar sus edades ingresadas (filtrar las edades
+                    por la nacionalidad ingresada)</h3>'''
         return (result)
     except:
         return jsonify({'trace': traceback.format_exc()})
