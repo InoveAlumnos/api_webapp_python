@@ -116,6 +116,9 @@ def comparativa():
         result += '''<h3>Esa funcion debe devolver los datos
                     de todas las edades ingresadas e realizar
                     un gráfico "plot" para mostrar en el HTMl</h3>'''
+        result += '''<h3>El eje "X" del gráfico debe ser los IDs
+                    de las personas y el eje "Y" deben ser sus
+                     respectivas edades</h3>'''
         result += '''<h3>Bonus track: puede hacer que esta endpoint reciba
                     como parámetro estático o dinámico que indique la nacionalidad
                     que se desea estudiar sus edades ingresadas (filtrar las edades
