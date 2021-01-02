@@ -59,9 +59,16 @@ server = config('server', config_path_name)
 
 heart.db = db
 
-
 @app.route("/")
 def index():
+    try:
+        # En el futuro se podria realizar una página de bienvenida
+        return redirect(url_for('pulsaciones'))
+    except:
+        return jsonify({'trace': traceback.format_exc()})
+
+@app.route("/api")
+def api():
     try:
         # Imprimir los distintos endopoints disponibles
         result = "<h1>Bienvenido!!</h1>"
@@ -96,7 +103,8 @@ def reset():
 @app.route("/pulsaciones")
 def pulsaciones():
     try:
-        return render_template('tabla.html')
+        data = show(show_type='table')
+        return render_template('tabla.html', data=data)
     except:
         return jsonify({'trace': traceback.format_exc()})
 
@@ -150,19 +158,8 @@ def registro():
             time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
             heart.insert(time, nombre, int(pulsos))
 
-            # Como respuesta al POST devolvemos el gráfico
-            # de pulsacionesde la persona
-            time, heartrate = heart.chart(nombre)
-
-            # Crear el grafico que se desea mostrar
-            fig, ax = plt.subplots(figsize=(16, 9))
-            ax.plot(time, heartrate)
-            ax.get_xaxis().set_visible(False)
-
-            output = plot_to_canvas(fig)
-            encoded_img = base64.encodebytes(output.getvalue())
-            plt.close(fig)  # Cerramos la imagen para que no consuma memoria del sistema
-            return Response(encoded_img, mimetype='image/png')
+            # Como respuesta al POST devolvemos la tabla de valores
+            return redirect(url_for('pulsaciones'))
         except:
             return jsonify({'trace': traceback.format_exc()})
 
@@ -183,8 +180,7 @@ def login():
             # Datos ingresados incorrectos
             return Response(status=400)
 
-        session['user'] = nombre
-        return url_for('user')
+        return redirect(url_for('user'))
 
 
 @app.route("/logout")
@@ -204,7 +200,7 @@ def user():
         # en la sesion, en caso negativo se solicita el login
         if 'user' in session:
             nombre = session['user']
-            return f'<h1>Hola {nombre}</h1>'
+            return render_template('user.html', name=nombre)
         else:
             return redirect(url_for('login'))
     except:
@@ -231,38 +227,10 @@ def show(show_type='json'):
         return jsonify(data)
     elif show_type == 'table':
         data = heart.report(limit=limit, offset=offset)
-        return html_table(data)
+        return data
     else:
         data = heart.report(limit=limit, offset=offset, dict_format=True)
         return jsonify(data)
-
-
-def html_table(data):
-
-    # Tabla HTML, header y formato
-    result = '<table border="1">'
-    result += '<thead cellpadding="1.0" cellspacing="1.0">'
-    result += '<tr>'
-    result += '<th>Nombre</th>'
-    result += '<th>Fecha</th>'
-    result += '<th>Último registro</th>'
-    result += '<th>Nº de registros</th>'
-    result += '</tr>'
-
-    for row in data:
-        # Fila de una tabla HTML
-        result += '<tr>'
-        result += '<td>' + str(row[0]) + '</td>'
-        result += '<td>' + str(row[1]) + '</td>'
-        result += '<td>' + str(row[2]) + '</td>'
-        result += '<td>' + str(row[3]) + '</td>'
-        result += '</tr>'
-
-    # Fin de la tabla HTML
-    result += '</thead cellpadding="0" cellspacing="0" >'
-    result += '</table>'
-
-    return result
 
 
 def plot_to_canvas(fig):
