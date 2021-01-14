@@ -180,7 +180,7 @@ def login():
             # Datos ingresados incorrectos
             return Response(status=400)
 
-		session['user'] = nombre
+        session['user'] = nombre
         return redirect(url_for('user'))
 
 
