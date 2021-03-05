@@ -40,10 +40,13 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
 
-import heart
+from heart_orm import db
+import heart_orm as heart
+#import heart as heart  # Puede elegir esta opcion sino quieren usar ORM
+
 from config import config
 
-
+# Crear el server Flask
 app = Flask(__name__)
 
 # Clave que utilizaremos para encriptar los datos
@@ -54,30 +57,39 @@ script_path = os.path.dirname(os.path.realpath(__file__))
 
 # Obtener los parámetros del archivo de configuración
 config_path_name = os.path.join(script_path, 'config.ini')
-db = config('db', config_path_name)
-server = config('server', config_path_name)
+db_config = config('db', config_path_name)
+server_config = config('server', config_path_name)
 
-heart.db = db
+# Indicamos al sistema (app) de donde leer la base de datos
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_config['database']}"
+# Asociamos nuestro controlador de la base de datos con la aplicacion
+db.init_app(app)
 
-
+# Ruta que se ingresa por la ULR 127.0.0.1:5000
 @app.route("/")
 def index():
     try:
-        # Imprimir los distintos endopoints disponibles
-        result = "<h1>Bienvenido!!</h1>"
-        result += "<h2>Endpoints disponibles:</h2>"
-        result += "<h3>[GET] /reset --> borrar y crear la base de datos</h3>"
-        result += "<h3>[GET] /pulsaciones?limit=[]&offset=[] --> mostrar últimas pulsaciones registradas (limite and offset are optional)</h3>"
-        result += "<h3>[GET] /pulsaciones/tabla?limit=[]&offset=[] --> mostrar últimas pulsaciones registradas (limite and offset are optional)</h3>"
-        result += "<h3>[GET] /pulsaciones/{name}/historico --> mostrar el histórico de pulsaciones de una persona</h3>"
-        result += "<h3>[GET] /registro --> HTML con el formulario de registro de pulsaciones</h3>"
-        result += "<h3>[POST] /registro --> ingresar nuevo registro de pulsaciones por JSON</h3>"
-        result += "<h3>[GET] /login --> HTML con el formulario de ingreso de usuario</h3>"
-        result += "<h3>[POST] /login --> ingresar el nombre de usuario por JSON</h3>"
-        result += "<h3>[GET] /logout --> Terminar la sesion</h3>"
-        result += "<h3>[GET] /user --> Paginade bienvenida del usuario</h3>"
+        # En el futuro se podria realizar una página de bienvenida
+        return redirect(url_for('pulsaciones'))
+    except:
+        return jsonify({'trace': traceback.format_exc()})
 
-        return(result)
+@app.route("/api")
+def api():
+    try:
+        # Imprimir los distintos endopoints disponibles
+        api_data = "<h2>Endpoints disponibles:</h2>"
+        api_data += "<h3>[GET] /reset --> borrar y crear la base de datos</h3>"
+        api_data += "<h3>[GET] /pulsaciones?limit=[]&offset=[] --> mostrar últimas pulsaciones registradas (limite and offset are optional)</h3>"
+        api_data += "<h3>[GET] /pulsaciones/tabla?limit=[]&offset=[] --> mostrar últimas pulsaciones registradas (limite and offset are optional)</h3>"
+        api_data += "<h3>[GET] /pulsaciones/{name}/historico --> mostrar el histórico de pulsaciones de una persona</h3>"
+        api_data += "<h3>[GET] /registro --> HTML con el formulario de registro de pulsaciones</h3>"
+        api_data += "<h3>[POST] /registro --> ingresar nuevo registro de pulsaciones por JSON</h3>"
+        api_data += "<h3>[GET] /login --> HTML con el formulario de ingreso de usuario</h3>"
+        api_data += "<h3>[POST] /login --> ingresar el nombre de usuario por JSON</h3>"
+        api_data += "<h3>[GET] /logout --> Terminar la sesion</h3>"
+        api_data += "<h3>[GET] /user --> Paginade bienvenida del usuario</h3>"
+        return render_template('api.html', api_html=api_data)
     except:
         return jsonify({'trace': traceback.format_exc()})
 
@@ -96,17 +108,24 @@ def reset():
 @app.route("/pulsaciones")
 def pulsaciones():
     try:
-        return render_template('tabla.html')
-    except:
-        return jsonify({'trace': traceback.format_exc()})
+        #data = show(show_type='table')
+        # Obtener de la query string los valores de limit y offset
+        limit_str = str(request.args.get('limit'))
+        offset_str = str(request.args.get('offset'))
 
+        limit = 0
+        offset = 0
 
-@app.route("/pulsaciones/tabla")
-def pulsaciones_tabla():
-    try:
-        # Mostrar todos los registros en formato tabla
-        result = show()
-        return (result)
+        if(limit_str is not None) and (limit_str.isdigit()):
+            limit = int(limit_str)
+
+        if(offset_str is not None) and (offset_str.isdigit()):
+            offset = int(offset_str)
+
+        # Obtener el reporte
+        data = heart.report(limit=limit, offset=offset)
+
+        return render_template('tabla.html', data=data)
     except:
         return jsonify({'trace': traceback.format_exc()})
 
@@ -147,24 +166,14 @@ def registro():
             if(nombre is None or pulsos is None or pulsos.isdigit() is False):
                 # Datos ingresados incorrectos
                     return Response(status=400)
-            time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            time = datetime.now()
             heart.insert(time, nombre, int(pulsos))
 
-            # Como respuesta al POST devolvemos el gráfico
-            # de pulsacionesde la persona
-            time, heartrate = heart.chart(nombre)
-
-            # Crear el grafico que se desea mostrar
-            fig, ax = plt.subplots(figsize=(16, 9))
-            ax.plot(time, heartrate)
-            ax.get_xaxis().set_visible(False)
-
-            output = plot_to_canvas(fig)
-            encoded_img = base64.encodebytes(output.getvalue())
-            plt.close(fig)  # Cerramos la imagen para que no consuma memoria del sistema
-            return Response(encoded_img, mimetype='image/png')
+            # Como respuesta al POST devolvemos la tabla de valores
+            return redirect(url_for('pulsaciones'))
         except:
             return jsonify({'trace': traceback.format_exc()})
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -184,7 +193,7 @@ def login():
             return Response(status=400)
 
         session['user'] = nombre
-        return url_for('user')
+        return redirect(url_for('user'))
 
 
 @app.route("/logout")
@@ -204,65 +213,11 @@ def user():
         # en la sesion, en caso negativo se solicita el login
         if 'user' in session:
             nombre = session['user']
-            return f'<h1>Hola {nombre}</h1>'
+            return render_template('user.html', name=nombre)
         else:
             return redirect(url_for('login'))
     except:
         return jsonify({'trace': traceback.format_exc()})
-
-
-def show(show_type='json'):
-
-    # Obtener de la query string los valores de limit y offset
-    limit_str = str(request.args.get('limit'))
-    offset_str = str(request.args.get('offset'))
-
-    limit = 0
-    offset = 0
-
-    if(limit_str is not None) and (limit_str.isdigit()):
-        limit = int(limit_str)
-
-    if(offset_str is not None) and (offset_str.isdigit()):
-        offset = int(offset_str)
-
-    if show_type == 'json':
-        data = heart.report(limit=limit, offset=offset, dict_format=True)
-        return jsonify(data)
-    elif show_type == 'table':
-        data = heart.report(limit=limit, offset=offset)
-        return html_table(data)
-    else:
-        data = heart.report(limit=limit, offset=offset, dict_format=True)
-        return jsonify(data)
-
-
-def html_table(data):
-
-    # Tabla HTML, header y formato
-    result = '<table border="1">'
-    result += '<thead cellpadding="1.0" cellspacing="1.0">'
-    result += '<tr>'
-    result += '<th>Nombre</th>'
-    result += '<th>Fecha</th>'
-    result += '<th>Último registro</th>'
-    result += '<th>Nº de registros</th>'
-    result += '</tr>'
-
-    for row in data:
-        # Fila de una tabla HTML
-        result += '<tr>'
-        result += '<td>' + str(row[0]) + '</td>'
-        result += '<td>' + str(row[1]) + '</td>'
-        result += '<td>' + str(row[2]) + '</td>'
-        result += '<td>' + str(row[3]) + '</td>'
-        result += '</tr>'
-
-    # Fin de la tabla HTML
-    result += '</thead cellpadding="0" cellspacing="0" >'
-    result += '</table>'
-
-    return result
 
 
 def plot_to_canvas(fig):
@@ -276,6 +231,6 @@ def plot_to_canvas(fig):
 if __name__ == '__main__':
     print('Inove@Monitor Cardíaco start!')
 
-    app.run(host=server['host'],
-            port=server['port'],
+    app.run(host=server_config['host'],
+            port=server_config['port'],
             debug=True)

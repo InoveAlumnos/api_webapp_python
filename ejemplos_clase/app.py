@@ -40,10 +40,13 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
 
-import heart
+from heart_orm import db
+import heart_orm as heart
+#import heart as heart  # Puede elegir esta opcion sino quieren usar ORM
+
 from config import config
 
-
+# Crear el server Flask
 app = Flask(__name__)
 
 # Clave que utilizaremos para encriptar los datos
@@ -54,11 +57,15 @@ script_path = os.path.dirname(os.path.realpath(__file__))
 
 # Obtener los parámetros del archivo de configuración
 config_path_name = os.path.join(script_path, 'config.ini')
-db = config('db', config_path_name)
-server = config('server', config_path_name)
+db_config = config('db', config_path_name)
+server_config = config('server', config_path_name)
 
-heart.db = db
+# Indicamos al sistema (app) de donde leer la base de datos
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_config['database']}"
+# Asociamos nuestro controlador de la base de datos con la aplicacion
+db.init_app(app)
 
+# Ruta que se ingresa por la ULR 127.0.0.1:5000
 @app.route("/")
 def index():
     try:
@@ -66,6 +73,7 @@ def index():
         return redirect(url_for('pulsaciones'))
     except:
         return jsonify({'trace': traceback.format_exc()})
+
 
 @app.route("/api")
 def api():
@@ -103,18 +111,24 @@ def reset():
 @app.route("/pulsaciones")
 def pulsaciones():
     try:
-        data = show(show_type='table')
+        #data = show(show_type='table')
+        # Obtener de la query string los valores de limit y offset
+        limit_str = str(request.args.get('limit'))
+        offset_str = str(request.args.get('offset'))
+
+        limit = 0
+        offset = 0
+
+        if(limit_str is not None) and (limit_str.isdigit()):
+            limit = int(limit_str)
+
+        if(offset_str is not None) and (offset_str.isdigit()):
+            offset = int(offset_str)
+
+        # Obtener el reporte
+        data = heart.report(limit=limit, offset=offset)
+
         return render_template('tabla.html', data=data)
-    except:
-        return jsonify({'trace': traceback.format_exc()})
-
-
-@app.route("/pulsaciones/tabla")
-def pulsaciones_tabla():
-    try:
-        # Mostrar todos los registros en formato tabla
-        result = show()
-        return (result)
     except:
         return jsonify({'trace': traceback.format_exc()})
 
@@ -155,13 +169,14 @@ def registro():
             if(nombre is None or pulsos is None or pulsos.isdigit() is False):
                 # Datos ingresados incorrectos
                     return Response(status=400)
-            time = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+            time = datetime.now()
             heart.insert(time, nombre, int(pulsos))
 
             # Como respuesta al POST devolvemos la tabla de valores
             return redirect(url_for('pulsaciones'))
         except:
             return jsonify({'trace': traceback.format_exc()})
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -208,32 +223,6 @@ def user():
         return jsonify({'trace': traceback.format_exc()})
 
 
-def show(show_type='json'):
-
-    # Obtener de la query string los valores de limit y offset
-    limit_str = str(request.args.get('limit'))
-    offset_str = str(request.args.get('offset'))
-
-    limit = 0
-    offset = 0
-
-    if(limit_str is not None) and (limit_str.isdigit()):
-        limit = int(limit_str)
-
-    if(offset_str is not None) and (offset_str.isdigit()):
-        offset = int(offset_str)
-
-    if show_type == 'json':
-        data = heart.report(limit=limit, offset=offset, dict_format=True)
-        return jsonify(data)
-    elif show_type == 'table':
-        data = heart.report(limit=limit, offset=offset)
-        return data
-    else:
-        data = heart.report(limit=limit, offset=offset, dict_format=True)
-        return jsonify(data)
-
-
 def plot_to_canvas(fig):
     # Convertir ese grafico en una imagen para enviar por HTTP
     # y mostrar en el HTML
@@ -243,8 +232,8 @@ def plot_to_canvas(fig):
 
 
 if __name__ == '__main__':
-    print('Inove@Monitor Cardíaco start!')
+    print('Inove server start!')
 
-    app.run(host=server['host'],
-            port=server['port'],
+    app.run(host=server_config['host'],
+            port=server_config['port'],
             debug=True)

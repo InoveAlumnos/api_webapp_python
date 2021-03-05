@@ -32,7 +32,7 @@ import sqlite3
 from datetime import datetime, timedelta
 
 import numpy as np
-from flask import Flask, request, jsonify, render_template, Response, redirect
+from flask import Flask, request, jsonify, render_template, Response, redirect, url_for
 import matplotlib
 matplotlib.use('Agg')   # For multi thread, non-interactive backend (avoid run in main loop)
 import matplotlib.pyplot as plt
@@ -40,9 +40,11 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
 
-import persona
-from config import config
+from persona_orm import db
+import persona_orm as persona
+#import persona as persona  # Puede elegir esta opcion sino quieren usar ORM
 
+from config import config
 
 app = Flask(__name__)
 
@@ -51,21 +53,33 @@ script_path = os.path.dirname(os.path.realpath(__file__))
 
 # Obtener los parámetros del archivo de configuración
 config_path_name = os.path.join(script_path, 'config.ini')
-db = config('db', config_path_name)
-server = config('server', config_path_name)
+db_config = config('db', config_path_name)
+server_config = config('server', config_path_name)
 
-persona.db = db
+# Indicamos al sistema (app) de donde leer la base de datos
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_config['database']}"
+# Asociamos nuestro controlador de la base de datos con la aplicacion
+db.init_app(app)
 
 
+# Ruta que se ingresa por la ULR 127.0.0.1:5000
 @app.route("/")
 def index():
+    try:
+        # En el futuro se podria realizar una página de bienvenida
+        return redirect(url_for('personas'))
+    except:
+        return jsonify({'trace': traceback.format_exc()})
+
+
+@app.route("/api")
+def api():
     try:
         # Imprimir los distintos endopoints disponibles
         result = "<h1>Bienvenido!!</h1>"
         result += "<h2>Endpoints disponibles:</h2>"
         result += "<h3>[GET] /reset --> borrar y crear la base de datos</h3>"
         result += "<h3>[GET] /personas --> mostrar la tabla de personas (el HTML)</h3>"
-        result += "<h3>[POST] /personas --> enviar el JSON para completar la tabla</h3>"
         result += "<h3>[GET] /registro --> mostrar el HTML con el formulario de registro de persona</h3>"
         result += "<h3>[POST] /registro --> ingresar nuevo registro de pulsaciones por JSON</h3>"
         result += "<h3>[GET] /comparativa --> mostrar un gráfico que compare cuantas personas hay de cada nacionalidad"
@@ -89,20 +103,18 @@ def reset():
 @app.route("/personas")
 def personas():
     try:
-        # Alumno: Implemente
+        # Alumno: Implemente el manejo
+        # del limit y offset para pasarle
+        # como parámetros a report
+        data = persona.report()
+        
         result = '''<h3>Alumno: Implementar la llamada
                     al HTML tabla.html
-                    con render_template</h3>'''
-        return result
-    except:
-        return jsonify({'trace': traceback.format_exc()})
-
-@app.route("/personas/tabla")
-def personas_tabla():
-    try:
-        # Mostrar todas las personas en JSON
-        result = persona.report()
-        return jsonify(result)
+                    con render_template, recuerde pasar
+                    data como parámetro</h3>'''
+        # Sacar esta linea cuando haya implementado el return
+        # con render template
+        return result 
     except:
         return jsonify({'trace': traceback.format_exc()})
 
@@ -143,8 +155,11 @@ def registro():
             # name = ...
             # age = ...
             # nationality = ...
+
             # persona.insert(name, int(age), nationality)
-            return Response(status=200)
+
+            # Como respuesta al POST devolvemos la tabla de valores
+            return redirect(url_for('personas'))
         except:
             return jsonify({'trace': traceback.format_exc()})
     
@@ -152,6 +167,6 @@ def registro():
 if __name__ == '__main__':
     print('Servidor arriba!')
 
-    app.run(host=server['host'],
-            port=server['port'],
+    app.run(host=server_config['host'],
+            port=server_config['port'],
             debug=True)

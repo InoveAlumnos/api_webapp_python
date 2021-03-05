@@ -16,8 +16,15 @@ __version__ = "1.1"
 
 import os
 import sqlite3
+from datetime import datetime, timedelta
 
-db = {}
+from config import config
+# Obtener la path de ejecución actual del script
+script_path = os.path.dirname(os.path.realpath(__file__))
+
+# Obtener los parámetros del archivo de configuración
+config_path_name = os.path.join(script_path, 'config.ini')
+db = config('db', config_path_name)
 
 
 def create_schema():
@@ -48,8 +55,10 @@ def create_schema():
 def insert(time, name, heartrate):
     conn = sqlite3.connect(db['database'])
     c = conn.cursor()
+    
+    time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
 
-    values = [time, name, heartrate]
+    values = [time_str, name, heartrate]
 
     c.execute("""
         INSERT INTO heartrate (time, name, value)
@@ -67,11 +76,10 @@ def dict_factory(cursor, row):
     return d
 
 
-def report(limit=0, offset=0, dict_format=False):
+def report(limit=0, offset=0):
     # Conectarse a la base de datos
     conn = sqlite3.connect(db['database'])
-    if dict_format is True:
-        conn.row_factory = dict_factory
+    conn.row_factory = dict_factory
     c = conn.cursor()
 
     query = 'SELECT h_order.time, h_order.name, h_order.value as last_heartrate, \

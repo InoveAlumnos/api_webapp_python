@@ -1,103 +1,29 @@
 <!doctype html>
 <html>
 
+<!-- Titulo de la página-->
 <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/registro.css') }}">
-    <link rel="stylesheet" href="../../static/style/registro.css" type="text/css">
-    <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <script src="https://kit.fontawesome.com/d604a8edc1.js" crossorigin="anonymous"></script>
-
-    <!-- Title Page -->
     <title>Registro</title>
-
 </head>
 
 <body>
 
-    <div class="contenedor" id="container">
-        <header>
-            <div>
-            </div>
-            <h1><a title="inove website" href="https://inove.com.ar/"><img class="inovelogo" src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a>Personas
-                <span style="font-size: 100%; color:  hsl(123, 99%, 44%);">
-                    <i class="fas fa-user"></i>
-                </span><img class="pythonlogo" src="{{url_for('static', filename='media/python-5.svg')}}" /></h1>
-            <div>
-            </div>
-        </header>
-        <section class="main">
-            </p><span style="font-size: 300%; color:  orange;     padding-right: 1%;">
-                <i class="fas fa-info"></i></span>Coloque los datos de la persona: Nombre, Edad, Nacionalidad <br><br></p>
+<h1><a title="inove website" href="https://inove.com.ar/"><img src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a></h1>
 
-            <form>
-                <!-- Nombre -->
-                <div id="nombre_div">
-                    <span style="font-size: 150%; color:  rgb(114, 52, 230);">
-                        <i class="fas fa-address-card"></i>
-                    </span><label for="name">Nombre y apellido:</label>
-                    <input id="nombre" type="name">
-                </div>
-                <br>
+<h2>Formulario de registro</h2>
 
-                <!-- Edad -->
-                <div id="edad_div">
-                    <span style="font-size: 150%; color: rgb(114, 52, 230);">
-                        <i class="fas fa-calendar"></i>
-                    </span><label for="username">Edad:</label>
-                    <input id="edad" type="numer" min='40' max='200'>
-                </div>
-                <br>
+<p>Ingrese una nueva persona</p>
 
-                <!-- Nacionalidad -->
-                <div id="nacionalidad_div">
-                    <span style="font-size: 150%; color: rgb(114, 52, 230);">
-                        <i class="fas fa-globe"></i>
-                    </span><label for="username">Nacionalidad:</label>
-                    <input id="nacionalidad" type="numer" min='40' max='200'>
-                </div>
-                <br>
-
-                <div id="enviar_div">
-                    <a href="#" class="btn-send">
-                        <span style="font-size: 100%; color:  orhsl(123, 99%, 44);">
-                            <i class="fas fa-caret-right"></i></span>
-                        <span style="font-size: 100%; color:  orhsl(123, 99%, 44);">
-                            <i class="fas fa-caret-right"></i></span>
-                        Enter
-                        <span style="font-size: 100%; color:  orhsl(123, 99%, 44);">
-                            <i class="fas fa-caret-left"></i></span>
-
-                        <span style="font-size: 100%; color:  orhsl(123, 99%, 44);">
-                            <i class="fas fa-caret-left"></i></span></a>
-                </div>
-            </form>
-            <div class="grafico" id='div_image'>
-                <!-- Acá aparecerá el gráfico del a persona solicitada -->
-            </div>
-        </section>
-
-        <footer class="pie">
-            <img class="contact1" src="{{url_for('static', filename='media/contact1.png')}}" />
-            <img class="contact2" src="{{url_for('static', filename='media/contact2.png')}}" />
-            <p><span style="font-size: 100%; color:  hsl(194, 99%, 44%);">
-                    <i class="fas fa-university"></span></i></span> Dirección: Monroe 271 Belgrano CABA. CP1428 - Buenos
-                Aires -
-                Argentina <span style="font-size: 100%; color:  orange;">
-                    <i class="fas fa-mobile-alt"></i></span> Tel.: 011 5263-9249 <span
-                    style="font-size: 100%; color:  hsl(278, 99%, 44%);">
-                    <i class="fas fa-at"></i></span> E-mail: http://info@inove.com.ar</p>
-
-        </footer>
-
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.11/lib/OpenLayers.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename="js/registro.js")}}"></script>
+<form method = "POST" action="{{url_for('registro')}}">
+  <label for="fname">Nombre y apellido:</label><br>
+  <input type="name" name="name"><br>
+  <label for="lname">Edad:</label><br>
+  <input type="numer" name="age"><br><br>
+  <label for="fnationality">Nacionalidad:</label><br>
+  <input type="name" name="nationality"><br>
+  <input type="submit" value="Enviar">
+</form> 
 
 
 </body>
-
 </html>

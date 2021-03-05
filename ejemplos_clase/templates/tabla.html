@@ -29,11 +29,11 @@
         </tr>
         {% for row in data %}
         <tr>
-            <td>{{row[0]}}</td>
-            <td>{{row[1]}}</td>
-            <td>{{row[2]}}</td>
-            <td>{{row[3]}}</td>
-            <td><a href="pulsaciones/{{row[1]}}/historico">Link</a></td>
+            <td>{{row['time']}}</td>
+            <td>{{row['name']}}</td>
+            <td>{{row['last_heartrate']}}</td>
+            <td>{{row['records']}}</td>
+            <td><a href="pulsaciones/{{row['name']}}/historico">Link</a></td>
         </tr>
         {% endfor %}
     </thead>

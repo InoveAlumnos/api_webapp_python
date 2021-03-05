@@ -1,72 +1,44 @@
 <!doctype html>
 <html>
 
+<!-- Titulo de la página-->
 <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style/index.css') }}">
-    <link rel="stylesheet" href="../../static/style/index.css" type="text/css">
-    <meta name="viewport"
-        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <script src="https://kit.fontawesome.com/d604a8edc1.js" crossorigin="anonymous"></script>
-
-    <!-- Title Page -->
-    <title>Index</title>
-
+    <title>Personas</title>
 </head>
 
 <body>
 
-    <div class="contenedor" id="container">
-        <header>
-            <div>
-            </div>
-            <h1><a title="inove website" href="https://inove.com.ar/"><img class="inovelogo" src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a>Personas
-                
-                <span style="font-size: 100%; color:  hsl(123, 99%, 44%);">
-                    <i class="fas fa-user"></i>
-                </span><img class="pythonlogo" src="{{url_for('static', filename='media/python-5.svg')}}" /></h1>
-            <div>
-            </div>
-        </header>
-        <section class="main">
-            </p><span style="font-size: 300%; color:  orange;     padding-right: 1%;">
-                <i class="fas fa-info-circle"></i></span>Esta aplicación mantiene el registro de las personas ingresadas en la plataforma.<br><br></p>
-            <id class="contenedor_de_tabla">
-                <table class="table" id="list_table" border="1">
-                    <thead cellpadding="0" cellspacing="0" >
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Edad</th>
-                            <th>Nacionalidad</th>
-                        </tr>
-                    </thead>
-                </table>
-            </id>
-            <div class="grafico" id='div_image'>
-                <!-- Acá aparecerá el gráfico del a persona solicitada -->
-            </div>
-        </section>
+<h1><a title="inove website" href="https://inove.com.ar/"><img src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a></h1>
 
-        <footer class="pie">
-            <img class="contact1" src="{{url_for('static', filename='media/contact1.png')}}" />
-            <img class="contact2" src="{{url_for('static', filename='media/contact2.png')}}" />
-            <p><span style="font-size: 100%; color:  hsl(194, 99%, 44%);">
-                    <i class="fas fa-university"></span></i></span> Dirección: Monroe 271 Belgrano CABA. CP1428 - Buenos
-                Aires -
-                Argentina <span style="font-size: 100%; color:  orange;">
-                    <i class="fas fa-mobile-alt"></i></span> Tel.: 011 5263-9249 <span
-                    style="font-size: 100%; color:  hsl(278, 99%, 44%);">
-                    <i class="fas fa-at"></i></span> E-mail: http://info@inove.com.ar</p>
+<h2>Personas</h2>
 
-        </footer>
+<p>Esta aplicación mantiene el registro de las personas ingresadas en la plataforma</p>
 
-    </div>
+<table border="1">
+    <thead cellpadding="1.0" cellspacing="1.0">
+        <tr>
+            <th>Nombre</th>            
+            <th>Edad</th>
+            <th>Nacionalidad</th>
+        </tr>
+        {% for row in data %}
+        <tr>
+            <td>{{row['name']}}</td>
+            <td>{{row['age']}}</td>
+            <td>{{row['nationality']}}</td>
+        </tr>
+        {% endfor %}
+    </thead>
+</table>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.11/lib/OpenLayers.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="{{ url_for('static', filename="js/tabla.js")}}"></script>
+<br><br>
 
+<form action="{{url_for('registro')}}">
+    <input type="submit" value="Registro"/>
+</form>
+<form action="{{url_for('api')}}">
+    <input type="submit" value="API"/>
+</form>
 
 </body>
-
 </html>
