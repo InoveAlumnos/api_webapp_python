@@ -15,9 +15,9 @@
 <p>Ingrese su ritmo cardíaco</p>
 
 <form method = "POST" action="{{url_for('registro')}}">
-  <label for="fname">Nombre y apellido:</label><br>
+  <label>Nombre y apellido:</label><br>
   <input type="name" name="name"><br>
-  <label for="lname">Ritmo cardíaco [min 40, max 200]:</label><br>
+  <label>Ritmo cardíaco [min 40, max 200]:</label><br>
   <input type="number" min='40' max='200' name="heartrate"><br><br>
   <input type="submit" value="Enviar">
 </form> 
