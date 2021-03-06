@@ -43,7 +43,7 @@
         <!-- Formulario para recibir los parámetros  -->
         <form method = "POST" action="{{url_for('registro')}}">
           <input type="text" name="name" placeholder="Nombre y apellido" required="required" />
-          <input type="numer" min='40' max='200' name="heartrate" placeholder="Ritmo cardíaco [min 40, max 200]" required="required" />
+          <input type="number" min='40' max='200' name="heartrate" placeholder="Ritmo cardíaco [min 40, max 200]" required="required" />
           <button type="submit" class="btn btn-primary btn-block btn-large">Enviar</button>
         </form> 
 
