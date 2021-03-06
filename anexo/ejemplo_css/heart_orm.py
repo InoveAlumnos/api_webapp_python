@@ -51,10 +51,6 @@ def insert(time, name, heartrate):
 
 
 def report(limit=0, offset=0):
-    # Crear la session
-    #Session = sessionmaker(bind=engine)
-    #session = Session()
-
     json_result_list = []
 
     # Obtener el ultimo registor de cada paciente
@@ -92,10 +88,6 @@ def report(limit=0, offset=0):
 
 
 def chart(name):
-    # Crear la session
-    #Session = sessionmaker(bind=engine)
-    #session = Session()
-
     # Obtener los últimos 250 registros del paciente
     # ordenado por fecha, obteniedo los últimos 250 registros
     query = db.session.query(HeartRate).filter(HeartRate.name == name).order_by(HeartRate.time.desc())
