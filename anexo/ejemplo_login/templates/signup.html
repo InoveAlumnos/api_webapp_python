@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html >
+<!--From https://codepen.io/frytyler/pen/EGdtg-->
+<head>
+  <meta charset="UTF-8">
+  <title>Inove App</title>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<!--<link rel="stylesheet" href="../static/css/style.css" type="text/css">-->
+<script src="https://kit.fontawesome.com/d604a8edc1.js" crossorigin="anonymous"></script>
+  
+</head>
+
+<body>
+
+  <div class="contenedor" id="container">
+  <header>
+    <div>
+    </div>
+    <h1><a title="inove website" href="https://inove.com.ar/">
+        <img class="inovelogo" src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a>
+        Login
+        <span style="font-size: 80%; color:  hsl(123, 99%, 44%);">
+        </span><img class="pythonlogo" src="{{url_for('static', filename='media/python-5.svg')}}" /></h1>
+    <div>
+    </div>
+
+    <div class="topnav">
+      <a href="{{url_for('pulsaciones')}}">Reporte</a>
+      <a href="{{url_for('registro')}}">Registro</a>
+      <a href="{{url_for('usuario')}}">Usuario</a>
+      <a href="{{url_for('api')}}">API</a>
+      </div><br>
+
+  </header>
+  <section class="main">
+    <div class="form">
+      <h1>Nuevo usuario</h1>
+
+        <!-- Formulario para recibir los parámetros  -->
+        <form method = "POST" action="{{url_for('signup')}}">
+          <input type="text" name="name" placeholder="Usuario" required="required" />
+          <input type="email" name="email" placeholder="Email" required="required" />
+          <input type="password" name="password" placeholder="Password">
+          <button type="submit" class="btn btn-primary btn-block btn-large">Registrarse</button>
+        </form>
+    </div>
+
+  </section>
+
+  <footer class="pie">
+
+      <p><span style="font-size: 100%; color:  hsl(194, 99%, 44%);">
+              <i class="fas fa-university"></span></i></span>
+              http://info@inove.com.ar
+              <span style="font-size: 100%; color:  orange;">
+              <i class="fas fa-mobile-alt"></i></span> Tel.: +54 9 11 2154-4777</p>
+  </footer>
+</div>
+
+
+</body>
+</html>
