@@ -68,6 +68,11 @@ db.init_app(app)
 @app.route("/")
 def index():
     try:
+
+        if os.path.isfile(db_config['database']) == False:
+            # Sino existe la base de datos la creo
+            heart.create_schema()
+
         # En el futuro se podria realizar una página de bienvenida
         return redirect(url_for('pulsaciones'))
     except:
