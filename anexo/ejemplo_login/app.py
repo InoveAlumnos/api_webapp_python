@@ -40,7 +40,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
 
-import heart_orm as heart
+import heart
 import user
 
 from config import config
@@ -69,6 +69,12 @@ user.db.init_app(app)
 @app.route("/")
 def index():
     try:
+
+        if os.path.isfile(db_config['database']) == False:
+            # Sino existe la base de datos la creo
+            heart.create_schema()
+            user.create_schema()
+
         # En el futuro se podria realizar una página de bienvenida
         return redirect(url_for('pulsaciones'))
     except:

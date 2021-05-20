@@ -14,9 +14,6 @@ __author__ = "Inove Coding School"
 __email__ = "alumnos@inove.com.ar"
 __version__ = "1.1"
 
-import os
-import sqlite3
-from datetime import datetime, timedelta
 
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()

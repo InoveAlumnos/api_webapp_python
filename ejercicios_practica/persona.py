@@ -3,7 +3,7 @@
 Heart DB manager
 ---------------------------
 Autor: Inove Coding School
-Version: 1.1
+Version: 1.2
 
 Descripcion:
 Programa creado para administrar la base de datos de registro de personas
@@ -11,79 +11,63 @@ Programa creado para administrar la base de datos de registro de personas
 
 __author__ = "Inove Coding School"
 __email__ = "alumnos@inove.com.ar"
-__version__ = "1.1"
+__version__ = "1.2"
 
-import os
-import sqlite3
 
-db = {}
+import sqlalchemy
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy import func
+
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
+
+class Persona(db.Model):
+    __tablename__ = "persona"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(String)
+    age = db.Column(Integer)
+    nationality = db.Column(String)
+    
+    def __repr__(self):
+        return f"Persona:{self.name} con nacionalidad {self.nacionalidad}"
 
 
 def create_schema():
+    # Borrar todos las tablas existentes en la base de datos
+    # Esta linea puede comentarse sino se eliminar los datos
+    db.drop_all()
 
-    # Conectarnos a la base de datos
-    # En caso de que no exista el archivo se genera
-    # como una base de datos vacia
-    conn = sqlite3.connect(db['database'])
-
-    # Crear el cursor para poder ejecutar las querys
-    c = conn.cursor()
-
-    # Obtener el path real del archivo de schema
-    script_path = os.path.dirname(os.path.realpath(__file__))
-    schema_path_name = os.path.join(script_path, db['schema'])
-
-    # Crar esquema desde archivo
-    c.executescript(open(schema_path_name, "r").read())
-
-    # Para salvar los cambios realizados en la DB debemos
-    # ejecutar el commit, NO olvidarse de este paso!
-    conn.commit()
-
-    # Cerrar la conexión con la base de datos
-    conn.close()
+    # Crear las tablas
+    db.create_all()
 
 
 def insert(name, age, nationality):
-    conn = sqlite3.connect(db['database'])
-    c = conn.cursor()
+    # Crear una nueva persona
+    person = Persona(name=name, age=age, nationality=nationality)
 
-    values = [name, age, nationality]
-
-    c.execute("""
-        INSERT INTO persona (name, age, nationality)
-        VALUES (?,?,?);""", values)
-
-    conn.commit()
-    # Cerrar la conexión con la base de datos
-    conn.close()
-
-
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+    # Agregar la persona a la DB
+    db.session.add(person)
+    db.session.commit()
 
 
 def report(limit=0, offset=0):
-    # Conectarse a la base de datos
-    conn = sqlite3.connect(db['database'])
-    conn.row_factory = dict_factory
-    c = conn.cursor()
-
-    query = 'SELECT name, age, nationality FROM persona'
-
+    # Obtener todas las personas
+    query = db.session.query(Persona)
     if limit > 0:
-        query += ' LIMIT {}'.format(limit)
+        query = query.limit(limit)
         if offset > 0:
-            query += ' OFFSET {}'.format(offset)
+            query = query.offset(offset)
 
-    query += ';'
+    json_result_list = []
 
-    c.execute(query)
-    query_results = c.fetchall()
+    # De los resultados obtenidos pasar a un diccionario
+    # que luego será enviado como JSON
+    # TIP --> la clase Persona podría tener una función
+    # para pasar a JSON/diccionario
+    for person in query:
+        json_result = {'name': person.name, 'age': person.age, 'nationality': person.nationality}
+        json_result_list.append(json_result)
 
-    # Cerrar la conexión con la base de datos
-    conn.close()
-    return query_results
+    return json_result_list

@@ -40,9 +40,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.image as mpimg
 
-from persona_orm import db
-import persona_orm as persona
-#import persona as persona  # Puede elegir esta opcion sino quieren usar ORM
+import persona
 
 from config import config
 
@@ -59,13 +57,18 @@ server_config = config('server', config_path_name)
 # Indicamos al sistema (app) de donde leer la base de datos
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_config['database']}"
 # Asociamos nuestro controlador de la base de datos con la aplicacion
-db.init_app(app)
+persona.db.init_app(app)
 
 
 # Ruta que se ingresa por la ULR 127.0.0.1:5000
 @app.route("/")
 def index():
     try:
+
+        if os.path.isfile(db_config['database']) == False:
+            # Sino existe la base de datos la creo
+            persona.create_schema()
+
         # En el futuro se podria realizar una página de bienvenida
         return redirect(url_for('personas'))
     except:

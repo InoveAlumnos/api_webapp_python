@@ -14,125 +14,92 @@ __author__ = "Inove Coding School"
 __email__ = "alumnos@inove.com.ar"
 __version__ = "1.1"
 
-import os
-import sqlite3
-from datetime import datetime, timedelta
 
-from config import config
-# Obtener la path de ejecución actual del script
-script_path = os.path.dirname(os.path.realpath(__file__))
+from flask_sqlalchemy import SQLAlchemy
+db = SQLAlchemy()
 
-# Obtener los parámetros del archivo de configuración
-config_path_name = os.path.join(script_path, 'config.ini')
-db = config('db', config_path_name)
+class HeartRate(db.Model):
+    __tablename__ = "heartrate"
+    id = db.Column(db.Integer, primary_key=True)
+    time = db.Column(db.DateTime)
+    name = db.Column(db.String)
+    value = db.Column(db.Integer)
+    
+    def __repr__(self):
+        return f"Paciente {self.name} ritmo cardíaco {self.value}"
 
 
 def create_schema():
+    # Borrar todos las tablas existentes en la base de datos
+    # Esta linea puede comentarse sino se eliminar los datos
+    db.drop_all()
 
-    # Conectarnos a la base de datos
-    # En caso de que no exista el archivo se genera
-    # como una base de datos vacia
-    conn = sqlite3.connect(db['database'])
-
-    # Crear el cursor para poder ejecutar las querys
-    c = conn.cursor()
-
-    # Obtener el path real del archivo de schema
-    script_path = os.path.dirname(os.path.realpath(__file__))
-    schema_path_name = os.path.join(script_path, db['schema'])
-
-    # Crar esquema desde archivo
-    c.executescript(open(schema_path_name, "r").read())
-
-    # Para salvar los cambios realizados en la DB debemos
-    # ejecutar el commit, NO olvidarse de este paso!
-    conn.commit()
-
-    # Cerrar la conexión con la base de datos
-    conn.close()
+    # Crear las tablas
+    db.create_all()
 
 
 def insert(time, name, heartrate):
-    conn = sqlite3.connect(db['database'])
-    c = conn.cursor()
-    
-    time_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
+    # Crear un nuevo registro de pulsaciones
+    pulsaciones = HeartRate(time=time, name=name, value=heartrate)
 
-    values = [time_str, name, heartrate]
-
-    c.execute("""
-        INSERT INTO heartrate (time, name, value)
-        VALUES (?,?,?);""", values)
-
-    conn.commit()
-    # Cerrar la conexión con la base de datos
-    conn.close()
-
-
-def dict_factory(cursor, row):
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+    # Agregar el registro de pulsaciones a la DB
+    db.session.add(pulsaciones)
+    db.session.commit()
 
 
 def report(limit=0, offset=0):
-    # Conectarse a la base de datos
-    conn = sqlite3.connect(db['database'])
-    conn.row_factory = dict_factory
-    c = conn.cursor()
+    json_result_list = []
 
-    query = 'SELECT h_order.time, h_order.name, h_order.value as last_heartrate, \
-             COUNT(name) as records \
-             FROM (SELECT time, name, value FROM heartrate ORDER BY time) as h_order \
-             GROUP BY name ORDER BY time'
+    # Obtener el ultimo registor de cada paciente
+    # y ademas la cantidad (count) de registros por paciente
+    # Esta forma de realizar el count es más avanzada pero más óptima
+    # porque de lo contrario debería realizar una query + count  por persona
+    # with_entities --> especificamos que queremos que devuelva la query,
+    # por defecto retorna un objeto HeartRate, nosotros estamos solicitando
+    # que además devuelva la cantidad de veces que se repite cada nombre
+    query = db.session.query(HeartRate).with_entities(HeartRate, db.func.count(HeartRate.name))
+
+    # Agrupamos por paciente (name) para que solo devuelva
+    # un valor por paciente
+    query = query.group_by(HeartRate.name)
+
+    # Ordenamos por fecha para obtener el ultimo registro
+    query = query.order_by(HeartRate.time)
 
     if limit > 0:
-        query += ' LIMIT {}'.format(limit)
+        query = query.limit(limit)
         if offset > 0:
-            query += ' OFFSET {}'.format(offset)
+            query = query.offset(offset)
 
-    query += ';'
+    for result in query:
+        pulsaciones = result[0]
+        cantidad = result[1]
+        json_result = {}
+        json_result['time'] = pulsaciones.time.strftime("%Y-%m-%d %H:%M:%S.%f")
+        json_result['name'] = pulsaciones.name
+        json_result['last_heartrate'] = pulsaciones.value
+        json_result['records'] = cantidad
+        json_result_list.append(json_result)
 
-    c.execute(query)
-    query_results = c.fetchall()
-
-    # Cerrar la conexión con la base de datos
-    conn.close()
-    return query_results
+    return json_result_list
 
 
 def chart(name):
-    # Conectarse a la base de datos
-    conn = sqlite3.connect(db['database'])
-    c = conn.cursor()
+    # Obtener los últimos 250 registros del paciente
+    # ordenado por fecha, obteniedo los últimos 250 registros
+    query = db.session.query(HeartRate).filter(HeartRate.name == name).order_by(HeartRate.time.desc())
+    query = query.limit(250)
+    query_results = query.all()
 
-    # Busco los ultimos 250 registro a nombre de name
-
-    c.execute('''SELECT * FROM (SELECT time FROM heartrate
-                 WHERE name =? ORDER by time desc LIMIT 250)
-                 ORDER by time''', [name])
-
-    query_output = c.fetchone()
-    if query_output is None:
+    if query_results is None or len(query_results) == 0:
         # No data register
         # Bug a proposito dejado para poner a prueba el traceback
         # ya que el sistema espera una tupla
         return []
 
-    time = query_output[0]
-    # Extraigo el "time" del registro 250, y busco todos los registros
-    # a su nombre cuyo tiempo sea mayor o igual al de ese registro
-    c.execute('''SELECT time, value FROM heartrate
-                WHERE name =? AND time >=?''', [name, time])
-
-    query_results = c.fetchall()
-
-    # Cerrar la conexión con la base de datos
-    conn.close()
-
-    # Extraigo la informacion en listas
-    time = [x[0] for x in query_results]
-    heartrate = [x[1] for x in query_results]
+    # De los resultados obtenidos tomamos el tiempo y las puslaciones pero
+    # en el orden inverso, para tener del más viejo a la más nuevo registro
+    time = [x.time.strftime("%Y-%m-%d %H:%M:%S.%f") for x in reversed(query_results)]
+    heartrate = [x.value for x in reversed(query_results)]
 
     return time, heartrate
