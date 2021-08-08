@@ -15,5 +15,8 @@ __Ejercicios para que el alumno desarrolle lo visto en clase__\
 __Ejercicios para que el alumno profundice sobre el tema durante la semana__\
 ejercicio_profundizacion.md
 
+__Tutorial para subir código a la nube con PythonAnywhere__\
+[Tutorial](https://youtu.be/hwom2AAcvDQ)
+
 # Consultas
 alumnos@inove.com.ar
