@@ -171,7 +171,7 @@ def registro():
 
             if(nombre is None or pulsos is None or pulsos.isdigit() is False):
                 # Datos ingresados incorrectos
-                    return Response(status=400)
+                return Response(status=400)
             time = datetime.now()
             heart.insert(time, nombre, int(pulsos))
 
