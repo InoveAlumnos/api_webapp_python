@@ -1,0 +1,21 @@
+
+<html>
+<head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+
+    <h1>Plot con Plot.ly</h1>
+
+    <form action="{{url_for('index')}}">
+        <input type="submit" value="index"/>
+    </form>
+
+    <div style="border: 1px solid black">
+        <div>{{plot|safe}}</div>
+    </div>
+
+</body>
+
+</html>
