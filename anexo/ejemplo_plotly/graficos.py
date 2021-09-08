@@ -3,6 +3,8 @@ import glob
 import os
 
 import numpy as np
+
+# pip3 install plotly
 import plotly.graph_objs as go
 from plotly.offline import plot
 
