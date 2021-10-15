@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<body>
+    <h1>Bienvenido!!</h1>
+    <h2>Endpoints disponibles:</h2>
+    <h3>[GET] /pulsaciones --> mostrar últimas pulsaciones registradas</h3>
+    <h3>[GET] /registro --> HTML con el formulario de registro de pulsaciones</h3>
+    <h3>[POST] /registro --> ingresar nuevo registro de pulsaciones por JSON</h3>
+
+    <!-- Codigo utilizado para redireccionar a otra pagina-->
+    <form action="{{url_for('pulsaciones')}}">
+        <input type="submit" value="Pulsaciones"/>
+    </form>
+
+    <form action="{{url_for('registro')}}">
+        <input type="submit" value="Registro"/>
+    </form>
+
+</body>
+</html>

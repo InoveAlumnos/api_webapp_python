@@ -1,114 +1,59 @@
-#!/usr/bin/env python
 '''
-API Personas
----------------------------
+Flask [Python]
+Ejercicios de práctica
+
 Autor: Inove Coding School
-Version: 1.0
+Version: 2.0
  
 Descripcion:
 Se utiliza Flask para crear un WebServer que levanta los datos de
 las personas registradas.
 
-Ejecución: Lanzar el programa y abrir en un navegador la siguiente dirección URL
-NOTA: Si es la primera vez que se lanza este programa crear la base de datos
-entrando a la siguiente URL
-http://127.0.0.1:5000/reset
-
 Ingresar a la siguiente URL para ver los endpoints disponibles
 http://127.0.0.1:5000/
 '''
 
-__author__ = "Inove Coding School"
-__email__ = "INFO@INOVE.COM.AR"
-__version__ = "1.0"
+# Realizar HTTP POST con --> post.py
 
 import traceback
-import io
-import sys
-import os
-import base64
-import json
-import sqlite3
-from datetime import datetime, timedelta
-
-import numpy as np
 from flask import Flask, request, jsonify, render_template, Response, redirect, url_for
-import matplotlib
-matplotlib.use('Agg')   # For multi thread, non-interactive backend (avoid run in main loop)
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
-import matplotlib.image as mpimg
 
+import utils
 import persona
-
-from config import config
 
 app = Flask(__name__)
 
-# Obtener la path de ejecución actual del script
-script_path = os.path.dirname(os.path.realpath(__file__))
-
-# Obtener los parámetros del archivo de configuración
-config_path_name = os.path.join(script_path, 'config.ini')
-db_config = config('db', config_path_name)
-server_config = config('server', config_path_name)
-
 # Indicamos al sistema (app) de donde leer la base de datos
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_config['database']}"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///personas.db"
 # Asociamos nuestro controlador de la base de datos con la aplicacion
 persona.db.init_app(app)
 
 
-# Ruta que se ingresa por la ULR 127.0.0.1:5000
 @app.route("/")
 def index():
     try:
-
-        if os.path.isfile(db_config['database']) == False:
-            # Sino existe la base de datos la creo
-            persona.create_schema()
-
-        # En el futuro se podria realizar una página de bienvenida
-        return redirect(url_for('personas'))
-    except:
-        return jsonify({'trace': traceback.format_exc()})
-
-
-@app.route("/api")
-def api():
-    try:
         # Imprimir los distintos endopoints disponibles
-        result = "<h1>Bienvenido!!</h1>"
-        result += "<h2>Endpoints disponibles:</h2>"
-        result += "<h3>[GET] /reset --> borrar y crear la base de datos</h3>"
-        result += "<h3>[GET] /personas --> mostrar la tabla de personas (el HTML)</h3>"
-        result += "<h3>[GET] /registro --> mostrar el HTML con el formulario de registro de persona</h3>"
-        result += "<h3>[POST] /registro --> ingresar nuevo registro de pulsaciones por JSON</h3>"
-        result += "<h3>[GET] /comparativa --> mostrar un gráfico que compare cuantas personas hay de cada nacionalidad"
-        
-        return(result)
+        # Renderizar el temaplate HTML index.html
+        print("Renderizar index.html")
+        return render_template('index.html')
     except:
         return jsonify({'trace': traceback.format_exc()})
 
 
-@app.route("/reset")
-def reset():
-    try:
-        # Borrar y crear la base de datos
-        persona.create_schema()
-        result = "<h3>Base de datos re-generada!</h3>"
-        return (result)
-    except:
-        return jsonify({'trace': traceback.format_exc()})
-
-
+# ejercicio de practica Nº1
 @app.route("/personas")
 def personas():
     try:
-        # Alumno: Implemente el manejo
-        # del limit y offset para pasarle
-        # como parámetros a report
+        # Alumno:
+        # Implementar la captura de limit y offset de los argumentos
+        # de la URL
+        # limit = ...
+        # offset = ....
+
+        # Debe verificar si el limit y offset son válidos cuando
+        # no son especificados en la URL
+
+        # Alumno: Pasarle al metodo report los valores de limit y offset
         data = persona.report()
         
         result = '''<h3>Alumno: Implementar la llamada
@@ -117,32 +62,12 @@ def personas():
                     data como parámetro</h3>'''
         # Sacar esta linea cuando haya implementado el return
         # con render template
-        return result 
+        return result
     except:
         return jsonify({'trace': traceback.format_exc()})
 
 
-@app.route("/comparativa")
-def comparativa():
-    try:
-        # Mostrar todos los registros en un gráfico
-        result = '''<h3>Implementar una función en persona.py
-                    que se llame "age_report"</h3>'''
-        result += '''<h3>Esa funcion debe devolver los datos
-                    de todas las edades ingresadas e realizar
-                    un gráfico "plot" para mostrar en el HTMl</h3>'''
-        result += '''<h3>El eje "X" del gráfico debe ser los IDs
-                    de las personas y el eje "Y" deben ser sus
-                     respectivas edades</h3>'''
-        result += '''<h3>Bonus track: puede hacer que esta endpoint reciba
-                    como parámetro estático o dinámico que indique la nacionalidad
-                    que se desea estudiar sus edades ingresadas (filtrar las edades
-                    por la nacionalidad ingresada)</h3>'''
-        return (result)
-    except:
-        return jsonify({'trace': traceback.format_exc()})
-
-
+# ejercicio de practica Nº2
 @app.route("/registro", methods=['GET', 'POST'])
 def registro():
     if request.method == 'GET':
@@ -153,23 +78,63 @@ def registro():
 
     if request.method == 'POST':
         try:
-            # Alumno: Implemente
-            # Obtener del HTTP POST JSON el nombre y los pulsos
+            name = ""
+            age = 0
+
+            return "Alumno --> Realice la implementacion y borre este return"
+
+            # Alumno:
+            # Obtener del HTTP POST JSON el nombre y la edad
             # name = ...
             # age = ...
-            # nationality = ...
 
-            # persona.insert(name, int(age), nationality)
-
+            # Alumno: descomentar la linea persona.insert una vez implementado
+            # lo anterior:
+            # persona.insert(name, int(age))
+            
             # Como respuesta al POST devolvemos la tabla de valores
-            return redirect(url_for('personas'))
+            # return redirect(url_for('personas'))
         except:
             return jsonify({'trace': traceback.format_exc()})
-    
+
+
+# ejercicio de practica Nº3
+@app.route("/comparativa")
+def comparativa():
+    try:
+        # Alumno:
+        # Implementar una función en persona.py llamada "dashboard"
+        # Lo que desea es realizar un gráfico de linea con las edades
+        # de todas las personas en la base de datos
+
+        # Para eso, su función "dashboard" debe devolver dos valores:
+        # - El primer valor que debe devolver es "x", que debe ser
+        # los Ids de todas las personas en su base de datos
+        # - El segundo valor que debe devolver es "y", que deben ser
+        # todas las edades respectivas a los Ids que se encuentran en "x"
+
+        # Descomentar luego de haber implementado su función en persona.py:
+
+        # x, y = persona.review()
+        # image_html = utils.graficar(time, heartrate)
+        # return Response(image_html.getvalue(), mimetype='image/png')
+
+        return "Alumno --> Realice la implementacion"
+    except:
+        return jsonify({'trace': traceback.format_exc()})
+
+
+# Este método se ejecutará solo una vez
+# la primera vez que ingresemos a un endpoint
+@app.before_first_request
+def before_first_request_func():
+    # Crear aquí todas las bases de datos
+    persona.db.create_all()
+    print("Base de datos generada")
+
 
 if __name__ == '__main__':
-    print('Servidor arriba!')
+    print('Inove@Server start!')
 
-    app.run(host=server_config['host'],
-            port=server_config['port'],
-            debug=True)
+    # Lanzar server
+    app.run(host="127.0.0.1", port=5000)

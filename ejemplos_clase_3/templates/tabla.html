@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+<!-- Titulo de la página-->
+<head>
+    <title>Heartbeat</title>
+</head>
+
+<body>
+
+<h1><a title="inove website" href="https://inove.com.ar/"><img src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a></h1>
+
+<h2>Heartbeat</h2>
+
+<p>Esta aplicación mantiene el registro de la variación la frecuencia
+    cardíaca de
+    los usuarios, para ello, cada usuario ingresa a la aplicación y vuelca sus datos, a continuación, el
+    sistema guardará en la base de datos la información que vinculará a cada usuario, y presentará un
+    gráfico con la evolución del ritmo cardíaco.</p>
+
+<table border="1">
+    <thead cellpadding="1.0" cellspacing="1.0">
+        <tr>
+            <th>Nombre</th>            
+            <th>Pulso cardíaco</th>
+        </tr>
+        {% for row in data %}
+        <tr>
+            <td>{{row['name']}}</td>
+            <td>{{row['heartrate']}}</td>
+        </tr>
+        {% endfor %}
+    </thead>
+</table>
+
+<br><br>
+
+<form action="{{url_for('index')}}">
+    <input type="submit" value="Home"/>
+</form>
+
+</body>
+</html>
