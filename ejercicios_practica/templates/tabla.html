@@ -19,13 +19,11 @@
         <tr>
             <th>Nombre</th>            
             <th>Edad</th>
-            <th>Nacionalidad</th>
         </tr>
         {% for row in data %}
         <tr>
             <td>{{row['name']}}</td>
             <td>{{row['age']}}</td>
-            <td>{{row['nationality']}}</td>
         </tr>
         {% endfor %}
     </thead>
