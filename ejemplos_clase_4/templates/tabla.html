@@ -33,7 +33,7 @@
             <td>{{row['name']}}</td>
             <td>{{row['last_heartrate']}}</td>
             <td>{{row['records']}}</td>
-            <td><a href="pulsaciones/{{row['name']}}">Link</a></td>
+            <td><a href="{{url_for('pulsaciones_historico', name=row['name'])}}">Link</a></td>
         </tr>
         {% endfor %}
     </thead>
