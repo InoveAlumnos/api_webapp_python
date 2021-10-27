@@ -115,8 +115,8 @@ def comparativa():
 
         # Descomentar luego de haber implementado su función en persona.py:
 
-        # x, y = persona.review()
-        # image_html = utils.graficar(time, heartrate)
+        # x, y = persona.dashboard()
+        # image_html = utils.graficar(x, y)
         # return Response(image_html.getvalue(), mimetype='image/png')
 
         return "Alumno --> Realice la implementacion"
