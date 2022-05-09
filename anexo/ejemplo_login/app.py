@@ -3,16 +3,11 @@
 API Monitor cardíaco
 ---------------------------
 Autor: Inove Coding School
-Version: 1.0
+Version: 2.0
  
 Descripcion:
 Se utiliza Flask para crear un WebServer que levanta los datos de
 las personas que registran su ritmo cardíaco.
-
-Ejecución: Lanzar el programa y abrir en un navegador la siguiente dirección URL
-NOTA: Si es la primera vez que se lanza este programa crear la base de datos
-entrando a la siguiente URL
-http://127.0.0.1:5000/reset
 
 Ingresar a la siguiente URL para ver los endpoints disponibles
 http://127.0.0.1:5000/
@@ -20,7 +15,7 @@ http://127.0.0.1:5000/
 
 __author__ = "Inove Coding School"
 __email__ = "INFO@INOVE.COM.AR"
-__version__ = "1.0"
+__version__ = "2.0"
 
 import traceback
 import io
@@ -28,22 +23,15 @@ import sys
 import os
 import base64
 import json
-import sqlite3
 from datetime import datetime, timedelta
 
 import numpy as np
 from flask import Flask, request, jsonify, render_template, Response, redirect , url_for, session
-import matplotlib
-matplotlib.use('Agg')   # For multi thread, non-interactive backend (avoid run in main loop)
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
-import matplotlib.image as mpimg
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 
+import utils
 import heart
 import user
-
-from config import config
 
 # Crear el server Flask
 app = Flask(__name__)
@@ -51,16 +39,19 @@ app = Flask(__name__)
 # Clave que utilizaremos para encriptar los datos
 app.secret_key = "flask_session_key_inventada"
 
-# Obtener la path de ejecución actual del script
-script_path = os.path.dirname(os.path.realpath(__file__))
+# Configurar el sistema de login
+# Referencia:
+# https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login-es
+login_manager = LoginManager()
+login_manager.login_view = 'login'
+login_manager.init_app(app)
 
-# Obtener los parámetros del archivo de configuración
-config_path_name = os.path.join(script_path, 'config.ini')
-db_config = config('db', config_path_name)
-server_config = config('server', config_path_name)
+@login_manager.user_loader
+def load_user(user_id):
+    return user.User.query.get(int(user_id))
 
 # Indicamos al sistema (app) de donde leer la base de datos
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_config['database']}"
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///heart.db"
 # Asociamos nuestro controlador de la base de datos con la aplicacion
 heart.db.init_app(app)
 user.db.init_app(app)
@@ -69,12 +60,6 @@ user.db.init_app(app)
 @app.route("/")
 def index():
     try:
-
-        if os.path.isfile(db_config['database']) == False:
-            # Sino existe la base de datos la creo
-            heart.create_schema()
-            user.create_schema()
-
         # En el futuro se podria realizar una página de bienvenida
         return redirect(url_for('pulsaciones'))
     except:
@@ -140,17 +125,14 @@ def pulsaciones():
 @app.route("/pulsaciones/<name>/historico")
 def pulsaciones_historico(name):
     try:
-        # Obtener el historial de la persona
+        name = name.lower()
+        # Obtener el historial de la persona de la DB 
+        print("Obtener gráfico de la persona", name)       
         time, heartrate = heart.chart(name)
 
-        # Crear el grafico que se desea mostrar
-        fig, ax = plt.subplots(figsize=(16, 9))
-        ax.plot(time, heartrate)
-        ax.get_xaxis().set_visible(False)
-
-        output = plot_to_canvas(fig)
-        plt.close(fig)  # Cerramos la imagen para que no consuma memoria del sistema
-        return Response(output.getvalue(), mimetype='image/png')
+        # Transformar los datos en una imagen HTML con matplotlib
+        image_html = utils.graficar(time, heartrate)
+        return Response(image_html.getvalue(), mimetype='image/png')
     except:
         return jsonify({'trace': traceback.format_exc()})
 
@@ -167,13 +149,15 @@ def registro():
     if request.method == 'POST':
         try:
             # Obtener del HTTP POST JSON los pulsos
-            nombre = str(request.form.get('name'))
+            nombre = str(request.form.get('name')).lower()
             pulsos = str(request.form.get('heartrate'))
 
             if(nombre is None or pulsos is None or pulsos.isdigit() is False):
                 # Datos ingresados incorrectos
                 return Response(status=400)
             time = datetime.now()
+
+            print("Registrar persona", nombre, "con pulsaciones", pulsos)
             heart.insert(time, nombre, int(pulsos))
 
             # Como respuesta al POST devolvemos la tabla de valores
@@ -195,13 +179,18 @@ def login():
         name = str(request.form.get('name'))
         password = request.form.get('password')
 
+        usr = user.get_user(name)
+        if usr is None:
+            # No existe el user
+            return render_template('login.html')
+
         user_validated = user.check_password(name, password)
 
         if user_validated is False:
             # Datos ingresados incorrectos
             return render_template('login.html')
 
-        session['user'] = name
+        login_user(usr)
         return redirect(url_for('usuario'))
 
 
@@ -219,8 +208,8 @@ def signup():
         email = request.form.get('email')
         password = request.form.get('password')
             
-        user_id = user.insert(name, email, password)
-        if user_id is not None:
+        usr = user.insert(name, email, password)
+        if usr is not None:
             return render_template('login.html')
         else:
             # Datos ingresados incorrectos
@@ -228,40 +217,38 @@ def signup():
 
 
 @app.route("/logout")
+@login_required
 def logout():
     try:
-        # Borrar y cerrar la sesion
-        session.clear()
+        # Deslogarse
+        logout_user()
         return redirect(url_for('login'))
     except:
         return jsonify({'trace': traceback.format_exc()})
 
 
 @app.route("/usuario")
+@login_required
 def usuario():
     try:
-        # De esta forma verifico si se ha registro el nombre del usuario
-        # en la sesion, en caso negativo se solicita el login
-        if 'user' in session:
-            name = session['user']
-            return render_template('usuario.html', name=name)
-        else:
-            return redirect(url_for('login'))
+        # Si el usuario esta logeado se muestra su nombre
+        return render_template('usuario.html', name=current_user.name)
     except:
         return jsonify({'trace': traceback.format_exc()})
 
 
-def plot_to_canvas(fig):
-    # Convertir ese grafico en una imagen para enviar por HTTP
-    # y mostrar en el HTML
-    output = io.BytesIO()
-    FigureCanvas(fig).print_png(output)
-    return output
+# Este método se ejecutará solo una vez
+# la primera vez que ingresemos a un endpoint
+@app.before_first_request
+def before_first_request_func():
+    # Crear aquí todas las bases de datos
+    heart.db.create_all()
+    user.db.create_all()
+    print("Base de datos generada")
 
 
 if __name__ == '__main__':
     print('Inove@Monitor Cardíaco start!')
 
-    app.run(host=server_config['host'],
-            port=server_config['port'],
-            debug=True)
+    # Lanzar server
+    app.run(host="127.0.0.1", port=5000)

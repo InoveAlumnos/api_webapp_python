@@ -12,19 +12,19 @@ de usuarios
 
 __author__ = "Inove Coding School"
 __email__ = "alumnos@inove.com.ar"
-__version__ = "1.1"
+__version__ = "2.0"
 
 import os
-import sqlite3
 from datetime import datetime, timedelta
 
 # pip3 install Flask-Login
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
@@ -55,7 +55,10 @@ def insert(name, email, password):
     db.session.add(new_user)
     db.session.commit()
 
-    return new_user.id
+    return new_user
+
+def get_user(name):
+    return User.query.filter_by(name=name).first()
 
 def check_password(name, password):
     user = User.query.filter_by(name=name).first()
