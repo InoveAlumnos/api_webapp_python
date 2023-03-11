@@ -53,8 +53,9 @@ def load_user(user_id):
 # Indicamos al sistema (app) de donde leer la base de datos
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///heart.db"
 # Asociamos nuestro controlador de la base de datos con la aplicacion
-heart.db.init_app(app)
-user.db.init_app(app)
+from models import db
+db.init_app(app)
+
 
 # Ruta que se ingresa por la ULR 127.0.0.1:5000
 @app.route("/")
@@ -89,8 +90,12 @@ def api():
 def reset():
     try:
         # Borrar y crear la base de datos
-        heart.create_schema()
-        user.create_schema()
+        # Borrar todos las tablas existentes en la base de datos
+        # Esta linea puede comentarse sino se eliminar los datos
+        db.drop_all()
+
+        # Crear las tablas
+        db.create_all()
         result = "<h3>Base de datos re-generada!</h3>"
         return (result)
     except:
@@ -242,8 +247,7 @@ def usuario():
 @app.before_first_request
 def before_first_request_func():
     # Crear aquí todas las bases de datos
-    heart.db.create_all()
-    user.db.create_all()
+    db.create_all()
     print("Base de datos generada")
 
 

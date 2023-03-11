@@ -15,8 +15,7 @@ __email__ = "alumnos@inove.com.ar"
 __version__ = "1.1"
 
 
-from flask_sqlalchemy import SQLAlchemy
-db = SQLAlchemy()
+from models import db
 
 class HeartRate(db.Model):
     __tablename__ = "heartrate"
@@ -27,15 +26,6 @@ class HeartRate(db.Model):
     
     def __repr__(self):
         return f"Paciente {self.name} ritmo cardíaco {self.value}"
-
-
-def create_schema():
-    # Borrar todos las tablas existentes en la base de datos
-    # Esta linea puede comentarse sino se eliminar los datos
-    db.drop_all()
-
-    # Crear las tablas
-    db.create_all()
 
 
 def insert(time, name, heartrate):
