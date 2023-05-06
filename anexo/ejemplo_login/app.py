@@ -14,7 +14,7 @@ http://127.0.0.1:5000/
 '''
 
 __author__ = "Inove Coding School"
-__email__ = "INFO@INOVE.COM.AR"
+__email__ = "alumnos@inovecode.com"
 __version__ = "2.0"
 
 import traceback

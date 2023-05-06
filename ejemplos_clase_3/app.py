@@ -24,16 +24,16 @@ app = Flask(__name__)
 # se debe usar base de dato (se verá en otro ejemplo más adelante)
 base_de_datos = [
     {
-        "name": "Inove",
-        "heartrate": 80
+        "nombre": "Inove",
+        "pulso": 80
     },
     {
-        "name": "Python",
-        "heartrate": 65
+        "nombre": "Python",
+        "pulso": 65
     },
     {
-        "name": "Max",
-        "heartrate": 110
+        "nombre": "Max",
+        "pulso": 110
     }
 ]
 

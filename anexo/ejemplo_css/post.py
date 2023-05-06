@@ -10,7 +10,7 @@ Se utiliza request para generar un HTTP post al servidor Flask
 '''
 
 __author__ = "Inove Coding School"
-__email__ = "INFO@INOVE.COM.AR"
+__email__ = "alumnos@inovecode.com"
 __version__ = "1.0"
 
 import os

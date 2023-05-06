@@ -10,7 +10,7 @@ Este programa fue creado para leer archivos de configuracion
 '''
 
 __author__ = "Inove Coding School"
-__email__ = "alumnos@inove.com.ar"
+__email__ = "alumnos@inovecode.com"
 __version__ = "1.1"
 
 from configparser import ConfigParser

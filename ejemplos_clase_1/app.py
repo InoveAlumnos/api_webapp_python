@@ -31,7 +31,7 @@ def index():
 
 
 # Ruta que se ingresa por la ULR 127.0.0.1:5000/user
-@app.route("/user")
+@app.route("/usuario")
 def user():
     try:
         # Renderizar el temaplate HTML user.html
@@ -42,14 +42,15 @@ def user():
 
 
 # Ruta que se ingresa por la ULR 127.0.0.1:5000/user/<nombre>
-@app.route("/user/<name>")
-def user_name(name):
+@app.route("/usuario/<nombre>")
+def user_name(nombre):
     try:
         # Renderizar el temaplate HTML user.html
-        print("Renderizar user.html con le nombre", name)
-        return render_template('user.html', name=name)
+        print("Renderizar user.html con le nombre", nombre)
+        return render_template('user.html', nombre=nombre)
     except:
         return jsonify({'trace': traceback.format_exc()})
+
 
 if __name__ == '__main__':
     print('Inove@Server start!')

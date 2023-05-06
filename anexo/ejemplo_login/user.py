@@ -11,7 +11,7 @@ de usuarios
 '''
 
 __author__ = "Inove Coding School"
-__email__ = "alumnos@inove.com.ar"
+__email__ = "alumnos@inovecode.com"
 __version__ = "2.0"
 
 import os

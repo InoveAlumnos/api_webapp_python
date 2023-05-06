@@ -8,7 +8,7 @@
 
 <body>
 
-<h1><a title="inove website" href="https://inove.com.ar/"><img src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a></h1>
+<h1><a title="inove website" href="https://inovecode.com/"><img src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a></h1>
 
 <h2>Heartbeat</h2>
 
@@ -23,17 +23,15 @@
         <tr>
             <th>Fecha</th>
             <th>Nombre</th>            
-            <th>Último registro</th>
-            <th>Nº de registros</th>
+            <th>Pulsación</th>
             <th>Histórico</th>
         </tr>
         {% for row in data %}
         <tr>
-            <td>{{row['time']}}</td>
-            <td>{{row['name']}}</td>
-            <td>{{row['last_heartrate']}}</td>
-            <td>{{row['records']}}</td>
-            <td><a href="{{url_for('pulsaciones_historico', name=row['name'])}}">Link</a></td>
+            <td>{{row['fecha']}}</td>
+            <td>{{row['nombre']}}</td>
+            <td>{{row['pulso']}}</td>
+            <td><a href="{{url_for('pulsaciones_historico', nombre=row['nombre'])}}">Link</a></td>
         </tr>
         {% endfor %}
     </thead>

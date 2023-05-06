@@ -18,9 +18,6 @@ Ingresar a la siguiente URL para ver los endpoints disponibles
 http://127.0.0.1:5000/
 '''
 
-__author__ = "Inove Coding School"
-__email__ = "INFO@INOVE.COM.AR"
-__version__ = "1.0"
 
 import traceback
 import io

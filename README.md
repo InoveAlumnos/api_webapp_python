@@ -1,7 +1,6 @@
 ![Inove banner](/inove.jpg)
 Inove Escuela de Código\
-info@inove.com.ar\
-Web: [Inove](http://inove.com.ar)
+Web: [Inove](https://inovecode.com)
 
 # Web Apps! [Python]
 En este repositorio encontrarán los siguientes archivos:
@@ -19,4 +18,4 @@ __Tutorial para subir código a la nube con PythonAnywhere__\
 [Tutorial](https://youtu.be/hwom2AAcvDQ)
 
 # Consultas
-alumnos@inove.com.ar
+alumnos@inovecode.com

@@ -8,7 +8,7 @@
 
 <body>
 
-<h1><a title="inove website" href="https://inove.com.ar/"><img src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a></h1>
+<h1><a title="inove website" href="https://inovecode.com/"><img src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a></h1>
 
 <h2>Formulario de registro</h2>
 
@@ -16,9 +16,9 @@
 
 <form method = "POST" action="{{url_for('registro')}}">
   <label>Nombre y apellido:</label><br>
-  <input type="name" name="name"><br>
+  <input type="name" name="nombre"><br>
   <label>Ritmo cardíaco [min 40, max 200]:</label><br>
-  <input type="number" min='40' max='200' name="heartrate"><br><br>
+  <input type="number" min='40' max='200' name="pulso"><br><br>
   <input type="submit" value="Enviar">
 </form> 
 

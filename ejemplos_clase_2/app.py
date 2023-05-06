@@ -31,12 +31,12 @@ def index():
 
 
 # Ruta que se ingresa por la ULR 127.0.0.1:5000/user/<nombre>
-@app.route("/user/<name>")
-def user_name(name):
+@app.route("/usuario/<nombre>")
+def user_name(nombre):
     try:
         # Renderizar el temaplate HTML user.html
-        print("Renderizar user.html con le nombre", name)
-        return render_template('user.html', name=name)
+        print("Renderizar user.html con le nombre", nombre)
+        return render_template('user.html', nombre=nombre)
     except:
         return jsonify({'trace': traceback.format_exc()})
 
@@ -55,15 +55,15 @@ def login():
     if request.method == 'POST':
         # Se captura la petición de registrar un usuario
         # Obtener del HTTP POST JSON el nombre
-        name = str(request.form.get('name'))
+        nombre = str(request.form.get('nombre'))
 
-        if(name is None):
+        if(nombre is None):
             # Datos ingresados incorrectos
             return Response(status=400)
 
         # Redireccionar el servidor a la URL del endpoint user_name
         # con el campo de "name" que se capturó en el POST
-        return redirect(url_for('user_name', name=name))
+        return redirect(url_for('user_name', nombre=nombre))
 
 if __name__ == '__main__':
     print('Inove@Server start!')
