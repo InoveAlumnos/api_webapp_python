@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+
+<!-- Titulo de la página-->
+<head>
+    <title>Agregar</title>
+</head>
+
+<body>
+
+<h2>Formulario para agregar un gasto</h2>
+
+<p>Ingrese el gasto y la categoría</p>
+
+<form method = "POST" action="{{url_for('gastos_agregar')}}">
+  <label>Categoria:</label><br>
+  <input type="name" name="categoria"><br>
+  <label>Gasto:</label><br>
+  <input type="number" name="gasto"><br><br>
+  <input type="submit" value="Enviar">
+</form> 
+
+<p></p>
+
+<form action="{{url_for('index')}}">
+  <input type="submit" value="Home"/>
+</form>
+
+<form action="{{url_for('gastos')}}">
+  <input type="submit" value="Gastos"/>
+</form>
+
+</body>
+</html>

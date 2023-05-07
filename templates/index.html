@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<body>
+    <h1>Bienvenido!!</h1>
+    <h2>Alumno, Debe completar los siguientes endpoints en el backend:</h2>
+    <h3>[GET] /gastos --> HTML para mostrar todo los gastos realizados</h3>
+    <h3>[GET] /gastos/agregar --> HTML con el formulario para agregar un gasto a una categoria</h3>
+    <h3>[POST] /gastos/agregar --> ingresar nuevo gasto proveniente del formulario HTML</h3>
+    <h3>[GET] /gastos/[categoria] --> mostrar todos los gastos de un categoría específica en formato JSON"</h3>
+
+    <!-- Codigo utilizado para redireccionar a otra pagina-->
+    <form action="{{url_for('gastos')}}">
+        <input type="submit" value="Gastos"/>
+    </form>
+
+    <form action="{{url_for('gastos_agregar')}}">
+        <input type="submit" value="Agregar gasto"/>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+
+<!-- Titulo de la página-->
+<head>
+    <title>Heartbeat</title>
+</head>
+
+<body>
+
+<h2>Aplicación de gastos</h2>
+
+<p>Esta aplicación mantiene el registro de nuestros gastos devivido en categorías</p>
+
+<table border="1">
+    <thead cellpadding="1.0" cellspacing="1.0">
+        <tr>
+            <th>Fecha</th>
+            <th>Categoria</th>            
+            <th>Gasto</th>
+            <th>Detalle</th>
+        </tr>
+        {% for row in datos %}
+        <tr>
+            <td>{{row['fecha']}}</td>
+            <td>{{row['categoria']}}</td>
+            <td>{{row['gasto']}}</td>
+            <td><a href="{{url_for('gastos_categoria', categoria=row['categoria'])}}">Link</a></td>
+        </tr>
+        {% endfor %}
+    </thead>
+</table>
+
+<br><br>
+
+<form action="{{url_for('index')}}">
+    <input type="submit" value="Home"/>
+</form>
+
+<form action="{{url_for('gastos_agregar')}}">
+    <input type="submit" value="Agregar gasto"/>
+</form>
+
+
+
+</body>
+</html>
