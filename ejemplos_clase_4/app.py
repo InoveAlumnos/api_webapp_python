@@ -180,11 +180,10 @@ def registro():
             return jsonify({'trace': traceback.format_exc()})
 
 
-# Este método se ejecutará solo una vez
-# la primera vez que ingresemos a un endpoint
-@app.before_first_request
-def before_first_request_func():
-    # Crear aquí todas las bases de datos
+# Este método se ejecutará la primera vez
+# cuando se construye la app.
+with app.app_context():
+    # Crear aquí la base de datos
     db.create_all()
     print("Base de datos generada")
 

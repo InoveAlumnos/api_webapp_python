@@ -65,6 +65,7 @@ def login():
         # con el campo de "name" que se capturó en el POST
         return redirect(url_for('user_name', nombre=nombre))
 
+
 if __name__ == '__main__':
     print('Inove@Server start!')
 

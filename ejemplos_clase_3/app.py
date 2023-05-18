@@ -80,6 +80,7 @@ def pulsaciones():
     except:
         return jsonify({'trace': traceback.format_exc()})
 
+
 if __name__ == '__main__':
     print('Inove@Server start!')
 
