@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+
+<!-- Titulo de la página-->
+<head>
+    <title>Personas</title>
+</head>
+
+<body>
+
+<h1><a title="inove website" href="https://inove.com.ar/"><img src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a></h1>
+
+<h2>Personas</h2>
+
+<p>Esta aplicación mantiene el registro de las personas ingresadas en la plataforma</p>
+
+<table border="1">
+    <thead cellpadding="1.0" cellspacing="1.0">
+        <tr>
+            <th>Nombre</th>            
+            <th>Edad</th>
+        </tr>
+        {% for row in data %}
+        <tr>
+            <td>{{row['name']}}</td>
+            <td>{{row['age']}}</td>
+        </tr>
+        {% endfor %}
+    </thead>
+</table>
+
+<br><br>
+
+<form action="{{url_for('registro')}}">
+    <input type="submit" value="Registro"/>
+</form>
+<form action="{{url_for('index')}}">
+    <input type="submit" value="Home"/>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+
+<!-- Titulo de la página-->
+<head>
+    <title>Registro</title>
+</head>
+
+<body>
+
+<h1><a title="inove website" href="https://inove.com.ar/"><img src="{{url_for('static', filename='media/cropped-3-1-300x131.png')}}" /></a></h1>
+
+<h2>Formulario de registro</h2>
+
+<p>Ingrese una nueva persona</p>
+
+<form method = "POST" action="{{url_for('registro')}}">
+  <label>Nombre y apellido:</label><br>
+  <input type="name" name="name"><br>
+  <label>Edad:</label><br>
+  <input type="number" name="age"><br><br>
+  <input type="submit" value="Enviar">
+</form> 
+
+<p></p>
+
+<form action="{{url_for('index')}}">
+  <input type="submit" value="Home"/>
+</form>
+
+<form action="{{url_for('personas')}}">
+  <input type="submit" value="Personas"/>
+</form>
+
+</body>
+</html>
